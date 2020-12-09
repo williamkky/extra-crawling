@@ -4,9 +4,9 @@ import pandas as pd
 import json
 import pathlib as pl
 
-sheet_name = '2'
-start = 100
-end = 200
+sheet_name = '0'
+start = 0
+end = 1000
 
 crawl_list = pd.read_excel('save_list.xlsx',sheet_name=sheet_name)
 crawl_list = crawl_list['crawl_list_{}'.format(sheet_name)].tolist()
@@ -93,6 +93,8 @@ def metadata_crawler(crawl_source, folder_path, crawldatetime):
     folder_path = pl.Path.cwd().joinpath(folder_path)
     cmd = 'instagram-scraper {} --media-types none --destination {} --include-location --media-metadata --latest --time {} --interactive --profile-metadata'.format(
         crawl_source, folder_path, int(crawldatetime))
+    print(cmd)
+    logging.info(cmd)
     no_of_error = 0
     error_msgs = []
     try:
@@ -106,18 +108,18 @@ def metadata_crawler(crawl_source, folder_path, crawldatetime):
             if len(line_str) > 0:
                 for line in line_str.split('\r'):
                     print(line)
-                    # logging.info(line)
+                    logging.info(line)
 
     except Exception as e:
         no_of_error += 1
         error_msgs.append(e)
-        # logging.error(e)
+        logging.error(e)
         print.error(e)
 
 successful_crawled = []
 not_successful_crawled = []
 
-crawl_list_for_remaining = [v['name'] for k,v in users_dict.items() if v['name'] not in all_existing_jsons]
+crawl_list_for_remaining = [users_dict[str(k)]['name'] for k in crawl_list if str(k) in users_dict and users_dict[str(k)]['name'] not in all_existing_jsons]
 
 for idx,name in enumerate(crawl_list_for_remaining[start:end]):
 
